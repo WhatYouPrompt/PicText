@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>字幕图片生成工具</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <div class="panel left">
+      <div class="card">
+        <div class="card-title">上传图片</div>
+        <label class="upload-btn">
+          <input id="fileInput" type="file" accept="image/png,image/jpeg,image/jpg,image/webp">
+          <span>选择图片</span>
+        </label>
+        <div id="fileInfo" class="file-info"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">字幕设置</div>
+        <div class="grid">
+          <label class="field">
+            <span>字幕高度</span>
+            <div class="inline">
+              <input id="captionHeight" type="number" value="100" min="0">
+              <span class="unit">px</span>
+            </div>
+          </label>
+          <label class="field">
+            <span>字体大小</span>
+            <div class="inline">
+              <input id="fontSize" type="number" value="80" min="12">
+              <span class="unit">px</span>
+            </div>
+          </label>
+          <label class="field">
+            <span>字体颜色</span>
+            <div id="fontColorField" class="color-field" role="button" tabindex="0"></div>
+            <input id="fontColor" type="color" value="#ffffff" class="hidden-color">
+          </label>
+          <label class="field color-host">
+            <span>背景条颜色</span>
+            <div id="bgColorField" class="color-field checker" role="button" tabindex="0">
+              <div id="bgOverlay" class="color-overlay"></div>
+            </div>
+            <div id="bgPopover" class="popover hidden">
+              <div class="row">
+                <input id="bgColorPicker" type="color" value="#000000">
+              </div>
+              <div class="row">
+                <input id="bgAlphaRange" type="range" min="0" max="100" value="100">
+                <span id="bgAlphaText" class="unit">100%</span>
+              </div>
+              <div class="row end">
+                <button id="bgPopoverDone" class="primary" type="button">完成</button>
+              </div>
+            </div>
+          </label>
+          <label class="field">
+            <span>字体样式</span>
+            <select id="fontFamily">
+              <option value="system-ui">系统默认</option>
+              <option value="sans-serif">Sans</option>
+              <option value="serif">Serif</option>
+              <option value="monospace">Monospace</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>字体粗细</span>
+            <select id="fontWeight">
+              <option value="normal">正常</option>
+              <option value="bold">加粗</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">字幕内容</div>
+        <textarea id="textInput" rows="6" placeholder="在此输入多行字幕，每行一条"></textarea>
+        <div id="warn" class="warn"></div>
+        <div class="actions">
+          <button id="generateBtn" class="primary">生成字幕图片</button>
+          <button id="saveOriginalBtn" class="ghost">保存字幕图片</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel right">
+      <div class="card">
+        <div class="card-title">预览</div>
+        <div class="preview">
+          <canvas id="previewCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
