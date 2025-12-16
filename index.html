@@ -1,12 +1,21 @@
 <!doctype html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>字幕图片生成工具</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
+  <header class="page-header">
+    <h1 class="product-title">
+      <span class="title-icon">📝</span>
+      图片字幕生成器
+    </h1>
+    <p class="product-subtitle">为图片添加精美字幕</p>
+  </header>
   <div class="app">
     <div class="panel left">
       <div class="card">
@@ -46,15 +55,30 @@
               <div id="bgOverlay" class="color-overlay"></div>
             </div>
             <div id="bgPopover" class="popover hidden">
-              <div class="row">
-                <input id="bgColorPicker" type="color" value="#000000">
+              <div class="color-picker-gradient" id="colorGradient">
+                <div class="picker-cursor" id="gradientCursor"></div>
               </div>
-              <div class="row">
-                <input id="bgAlphaRange" type="range" min="0" max="100" value="100">
-                <span id="bgAlphaText" class="unit">100%</span>
+              <div class="color-picker-hue" id="hueBar">
+                <div class="picker-cursor" id="hueCursor"></div>
               </div>
-              <div class="row end">
-                <button id="bgPopoverDone" class="primary" type="button">完成</button>
+              <div class="slider-row">
+                <span class="label-text">透明度</span>
+                <input id="bgAlphaRange" type="range" min="0" max="100" value="20">
+                <span id="bgAlphaText" class="value-text">20%</span>
+              </div>
+              <div class="rgb-inputs">
+                <div class="rgb-input-group">
+                  <label>R</label>
+                  <input id="rgbR" type="number" min="0" max="255" value="0">
+                </div>
+                <div class="rgb-input-group">
+                  <label>G</label>
+                  <input id="rgbG" type="number" min="0" max="255" value="0">
+                </div>
+                <div class="rgb-input-group">
+                  <label>B</label>
+                  <input id="rgbB" type="number" min="0" max="255" value="0">
+                </div>
               </div>
             </div>
           </label>
@@ -101,4 +125,5 @@
   <div id="toast" class="toast"></div>
   <script src="app.js"></script>
 </body>
+
 </html>
