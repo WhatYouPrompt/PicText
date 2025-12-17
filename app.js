@@ -22,11 +22,12 @@ const textInput = document.getElementById('textInput');
 const previewCanvas = document.getElementById('previewCanvas');
 const generateBtn = document.getElementById('generateBtn');
 const saveOriginalBtn = document.getElementById('saveOriginalBtn');
+const resetTextBtn = document.getElementById('resetTextBtn');
 const toast = document.getElementById('toast');
 const warn = document.getElementById('warn');
 
 let img = null; let imgName = 'image'; let offscreen = null; let scale = 1; let pending = false; let hasGenerated = false; let backgroundAlpha = 0.2;
-let currentHue = 0; let currentSat = 0; let currentVal = 100; let currentR = 0; let currentG = 0; let currentB = 0;
+let currentHue = 0; let currentSat = 0; let currentVal = 0; let currentR = 0; let currentG = 0; let currentB = 0;
 
 function showToast(msg, ok = true) { toast.textContent = msg; toast.style.background = ok ? '#2da44e' : '#d1242f'; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1800) }
 
@@ -98,15 +99,30 @@ function updateCursors() {
   hueCursor.style.top = '50%';
 }
 
-function computeBarHeight(totalHeight, lines) { const n = lines.length > 0 ? lines.length : 1; return Math.floor(totalHeight / n) }
+function computeBarHeight(h) { return h }
 
 function render() {
   if (!img) { const ctx = previewCanvas.getContext('2d'); previewCanvas.width = 800; previewCanvas.height = 450; ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height); warn.textContent = ''; return }
   const captionHeight = Number(captionHeightInput.value) || 0; const fontSize = Number(fontSizeInput.value) || 12; const fontColor = fontColorInput.value; const fontFamily = fontFamilySelect.value; const fontWeight = fontWeightSelect.value; const lines = readLines();
-  const w = img.width, h = img.height; const bars = lines.length > 0 ? lines.length : captionHeight > 0 ? 1 : 0; const barH = bars > 0 ? computeBarHeight(captionHeight, lines) : 0; const padding = Math.max(4, Math.round(fontSize * 0.2)); const overflow = bars > 0 && (fontSize + padding > barH);
+  const w = img.width, h = img.height; const bars = lines.length > 0 ? lines.length : 0; const barH = captionHeight; const padding = Math.max(4, Math.round(fontSize * 0.2)); const overflow = bars > 0 && (fontSize + padding > barH);
   warn.textContent = overflow ? '字体过大，请增大字幕高度或减小字号' : warn.textContent;
-  const pctx = previewCanvas.getContext('2d'); const maxW = previewCanvas.parentElement.clientWidth - 24; scale = Math.min(1, maxW / w); previewCanvas.width = Math.round(w * scale); previewCanvas.height = Math.round(h * scale); pctx.imageSmoothingEnabled = true; pctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-  if (hasGenerated && offscreen) { pctx.drawImage(offscreen, 0, 0, previewCanvas.width, previewCanvas.height) } else { pctx.drawImage(img, 0, 0, previewCanvas.width, previewCanvas.height) } updateColorFields()
+  const pctx = previewCanvas.getContext('2d');
+  const maxW = previewCanvas.parentElement.clientWidth - 24;
+
+  // Choose source image (generated or original)
+  const source = (hasGenerated && offscreen) ? offscreen : img;
+  const sw = source.width;
+  const sh = source.height;
+
+  scale = Math.min(1, maxW / sw);
+  previewCanvas.width = Math.round(sw * scale);
+  previewCanvas.height = Math.round(sh * scale);
+
+  pctx.imageSmoothingEnabled = true;
+  pctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+  pctx.drawImage(source, 0, 0, previewCanvas.width, previewCanvas.height);
+
+  updateColorFields();
 }
 
 function triggerDownload(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000) }
@@ -165,9 +181,82 @@ document.addEventListener('mouseup', () => { isDraggingGradient = false; isDragg
 document.addEventListener('click', e => { const within = e.target.closest('.color-host'); if (!within) { bgPopover.classList.add('hidden') } });
 fontFamilySelect.addEventListener('change', onParamsChange);
 fontWeightSelect.addEventListener('change', onParamsChange);
+fontFamilySelect.addEventListener('change', onParamsChange);
+fontWeightSelect.addEventListener('change', onParamsChange);
 textInput.addEventListener('input', onParamsChange);
+resetTextBtn.addEventListener('click', () => {
+  textInput.value = '';
+  onParamsChange();
+  showToast('内容已重置');
+});
 
-generateBtn.addEventListener('click', () => { if (!img) { showToast('请先上传图片', false); return } const lines = readLines(); const nonEmpty = lines.filter(l => l.length > 0); if (nonEmpty.length === 0) { showToast('请输入字幕内容', false); return } const captionHeight = Number(captionHeightInput.value) || 0; const fontSize = Number(fontSizeInput.value) || 12; const fontColor = fontColorInput.value; const fontFamily = fontFamilySelect.value; const fontWeight = fontWeightSelect.value; const w = img.width, h = img.height; const bars = lines.length > 0 ? lines.length : captionHeight > 0 ? 1 : 0; const barH = bars > 0 ? computeBarHeight(captionHeight, lines) : 0; const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.drawImage(img, 0, 0, w, h); if (bars > 0 && barH > 0) { ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`; ctx.lineJoin = 'round'; ctx.miterLimit = 2; for (let i = 0; i < bars; i++) { const y = h - captionHeight + i * barH; ctx.fillStyle = `rgba(${currentR},${currentG},${currentB},${backgroundAlpha})`; ctx.fillRect(0, y, w, barH); const ty = y + barH / 2; const text = lines[i] || ''; if (text) { ctx.fillStyle = fontColor; ctx.fillText(text, w / 2, ty) } } } offscreen = canvas; hasGenerated = true; showToast('字幕图片生成成功!'); render() });
+generateBtn.addEventListener('click', () => {
+  if (!img) { showToast('请先上传图片', false); return }
+  const lines = readLines();
+  const nonEmpty = lines.filter(l => l.length > 0);
+  if (nonEmpty.length === 0) { showToast('请输入字幕内容', false); return }
+  const captionHeight = Number(captionHeightInput.value) || 0;
+  const fontSize = Number(fontSizeInput.value) || 12;
+  const fontColor = fontColorInput.value;
+  const fontFamily = fontFamilySelect.value;
+  const fontWeight = fontWeightSelect.value;
+  const w = img.width, h = img.height;
+  const bars = lines.length;
+  const barH = captionHeight;
+
+  // Calculate new total height: original height + (N-1) * stripHeight
+  // If 1 line: h
+  // If 2 lines: h + barH
+  const totalH = h + (bars > 1 ? (bars - 1) * barH : 0);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = totalH;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = true;
+
+  // Draw original image at top
+  ctx.drawImage(img, 0, 0, w, h);
+
+  if (bars > 0 && barH > 0) {
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+    ctx.lineJoin = 'round';
+    ctx.miterLimit = 2;
+
+    for (let i = 0; i < bars; i++) {
+      let dy, textY;
+      // Logic:
+      // i=0: Draw on original image bottom. (h - barH)
+      // i>0: Draw stitched below. (h + (i-1)*barH)
+
+      if (i === 0) {
+        dy = h - barH;
+      } else {
+        dy = h + (i - 1) * barH;
+        // Draw the captured bottom strip of original image
+        // Source: (0, h - barH, w, barH)
+        ctx.drawImage(img, 0, h - barH, w, barH, 0, dy, w, barH);
+      }
+
+      // Draw background overlay
+      ctx.fillStyle = `rgba(${currentR},${currentG},${currentB},${backgroundAlpha})`;
+      ctx.fillRect(0, dy, w, barH);
+
+      // Draw text
+      const text = lines[i] || '';
+      if (text) {
+        ctx.fillStyle = fontColor;
+        ctx.fillText(text, w / 2, dy + barH / 2);
+      }
+    }
+  }
+  offscreen = canvas;
+  hasGenerated = true;
+  showToast('字幕图片生成成功!');
+  render();
+});
 
 saveOriginalBtn.addEventListener('click', () => { if (!hasGenerated || !offscreen) { showToast('请先生成字幕图片', false); return } offscreen.toBlob(b => { if (!b) { showToast('保存失败', false); return } triggerDownload(b, `${imgName}-captioned.png`) }, 'image/png') });
 

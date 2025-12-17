@@ -10,110 +10,132 @@
 
 <body>
   <header class="page-header">
-    <h1 class="product-title">
-      <span class="title-icon">📝</span>
-      图片字幕生成器
-    </h1>
-    <p class="product-subtitle">为图片添加精美字幕</p>
+    <div class="header-content">
+      <h1 class="product-title">
+        <span class="title-icon">📝</span>
+        图片字幕生成器
+        <span class="author-tag">@WhatYouPromot</span>
+      </h1>
+      <!-- <p class="product-subtitle">为图片添加精美字幕</p> -->
+    </div>
   </header>
   <div class="app">
     <div class="panel left">
-      <div class="card">
-        <div class="card-title">上传图片</div>
-        <label class="upload-btn">
-          <input id="fileInput" type="file" accept="image/png,image/jpeg,image/jpg,image/webp">
-          <span>选择图片</span>
-        </label>
-        <div id="fileInfo" class="file-info"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">字幕设置</div>
-        <div class="grid">
-          <label class="field">
-            <span>字幕高度</span>
-            <div class="inline">
-              <input id="captionHeight" type="number" value="100" min="0">
-              <span class="unit">px</span>
-            </div>
-          </label>
-          <label class="field">
-            <span>字体大小</span>
-            <div class="inline">
-              <input id="fontSize" type="number" value="80" min="12">
-              <span class="unit">px</span>
-            </div>
-          </label>
-          <label class="field">
-            <span>字体颜色</span>
-            <div id="fontColorField" class="color-field" role="button" tabindex="0"></div>
-            <input id="fontColor" type="color" value="#ffffff" class="hidden-color">
-          </label>
-          <label class="field color-host">
-            <span>背景条颜色</span>
-            <div id="bgColorField" class="color-field checker" role="button" tabindex="0">
-              <div id="bgOverlay" class="color-overlay"></div>
-            </div>
-            <div id="bgPopover" class="popover hidden">
-              <div class="color-picker-gradient" id="colorGradient">
-                <div class="picker-cursor" id="gradientCursor"></div>
-              </div>
-              <div class="color-picker-hue" id="hueBar">
-                <div class="picker-cursor" id="hueCursor"></div>
-              </div>
-              <div class="slider-row">
-                <span class="label-text">透明度</span>
-                <input id="bgAlphaRange" type="range" min="0" max="100" value="20">
-                <span id="bgAlphaText" class="value-text">20%</span>
-              </div>
-              <div class="rgb-inputs">
-                <div class="rgb-input-group">
-                  <label>R</label>
-                  <input id="rgbR" type="number" min="0" max="255" value="0">
-                </div>
-                <div class="rgb-input-group">
-                  <label>G</label>
-                  <input id="rgbG" type="number" min="0" max="255" value="0">
-                </div>
-                <div class="rgb-input-group">
-                  <label>B</label>
-                  <input id="rgbB" type="number" min="0" max="255" value="0">
-                </div>
-              </div>
-            </div>
-          </label>
-          <label class="field">
-            <span>字体样式</span>
-            <select id="fontFamily">
-              <option value="system-ui">系统默认</option>
-              <option value="sans-serif">Sans</option>
-              <option value="serif">Serif</option>
-              <option value="monospace">Monospace</option>
-            </select>
-          </label>
-          <label class="field">
-            <span>字体粗细</span>
-            <select id="fontWeight">
-              <option value="normal">正常</option>
-              <option value="bold">加粗</option>
-            </select>
-          </label>
+      <div class="card full-height">
+        <div class="section-group">
+          <div class="card-title">上传图片</div>
+          <div class="upload-container">
+            <label class="upload-btn large">
+              <input id="fileInput" type="file" accept="image/png,image/jpeg,image/jpg,image/webp">
+              <span>+ 选择图片</span>
+            </label>
+            <div id="fileInfo" class="file-info empty">未选择文件</div>
+          </div>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="card-title">字幕内容</div>
-        <textarea id="textInput" rows="6" placeholder="在此输入多行字幕，每行一条"></textarea>
-        <div id="warn" class="warn"></div>
-        <div class="actions">
-          <button id="generateBtn" class="primary">生成字幕图片</button>
-          <button id="saveOriginalBtn" class="ghost">保存字幕图片</button>
+        <div class="section-divider"></div>
+
+        <div class="section-group">
+          <div class="card-title">字幕设置</div>
+          <div class="grid">
+            <label class="field">
+              <span>字幕高度</span>
+              <div class="inline">
+                <input id="captionHeight" type="number" value="100" min="0">
+                <span class="unit">px</span>
+              </div>
+            </label>
+            <label class="field">
+              <span>字体大小</span>
+              <div class="inline">
+                <input id="fontSize" type="number" value="80" min="12">
+                <span class="unit">px</span>
+              </div>
+            </label>
+            <label class="field">
+              <span>字体颜色</span>
+              <div id="fontColorField" class="color-field" role="button" tabindex="0"></div>
+              <input id="fontColor" type="color" value="#ffffff" class="hidden-color">
+            </label>
+            <label class="field color-host">
+              <span>背景条颜色</span>
+              <div id="bgColorField" class="color-field checker" role="button" tabindex="0">
+                <div id="bgOverlay" class="color-overlay"></div>
+              </div>
+              <div id="bgPopover" class="popover hidden">
+                <div class="color-picker-gradient" id="colorGradient">
+                  <div class="picker-cursor" id="gradientCursor"></div>
+                </div>
+                <div class="color-picker-hue" id="hueBar">
+                  <div class="picker-cursor" id="hueCursor"></div>
+                </div>
+                <div class="slider-row">
+                  <span class="label-text">透明度</span>
+                  <input id="bgAlphaRange" type="range" min="0" max="100" value="20">
+                  <span id="bgAlphaText" class="value-text">20%</span>
+                </div>
+                <div class="rgb-inputs">
+                  <div class="rgb-input-group">
+                    <label>R</label>
+                    <input id="rgbR" type="number" min="0" max="255" value="0">
+                  </div>
+                  <div class="rgb-input-group">
+                    <label>G</label>
+                    <input id="rgbG" type="number" min="0" max="255" value="0">
+                  </div>
+                  <div class="rgb-input-group">
+                    <label>B</label>
+                    <input id="rgbB" type="number" min="0" max="255" value="0">
+                  </div>
+                </div>
+              </div>
+            </label>
+            <label class="field">
+              <span>字体样式</span>
+              <select id="fontFamily">
+                <option value="system-ui">系统默认</option>
+                <option value="sans-serif">Sans</option>
+                <option value="serif">Serif</option>
+                <option value="monospace">Monospace</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>字体粗细</span>
+              <select id="fontWeight">
+                <option value="normal">正常</option>
+                <option value="bold">加粗</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="section-group">
+          <div class="card-title-row">
+            <div class="card-title">字幕内容</div>
+            <button id="resetTextBtn" class="icon-btn" title="重置内容" aria-label="重置内容">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                <path d="M21 3v5h-5"></path>
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                <path d="M3 21v-5h5"></path>
+              </svg>
+            </button>
+          </div>
+          <textarea id="textInput" rows="6" placeholder="在此输入多行字幕，每行一条"></textarea>
+          <div id="warn" class="warn"></div>
+          <div class="actions">
+            <button id="generateBtn" class="primary">生成字幕图片</button>
+            <button id="saveOriginalBtn" class="ghost">保存字幕图片</button>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="panel right">
-      <div class="card">
+      <div class="card full-height">
         <div class="card-title">预览</div>
         <div class="preview">
           <canvas id="previewCanvas"></canvas>
